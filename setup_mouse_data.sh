@@ -8,7 +8,7 @@ mkdir -p GTF
 # Step 2: Change to reference directory and download the genome fasta
 cd reference
 echo "Downloading Mus musculus genome reference (GRCm39, Ensembl)"
-wget ftp://ftp.ensembl.org/pub/release-111/fasta/mus_musculus/dna/Mus_musculus.GRCm39.dna.primary_assembly.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-106/gtf/mus_musculus/Mus_musculus.GRCm39.106.gtf.gz
 
  #step3 : change to GTF directory and download it 
 cd ../GTF
