@@ -1,0 +1,46 @@
+#!/bin/bash
+
+SECONDS=0
+
+# Define file paths
+reference=~/RNAseq/reference/Mus_musculus.GRCm39.dna.primary_assembly.fa
+read1=~/RNAseq/fastq/SRR33724466/SRR33724466_1.fastq
+read2=~/RNAseq/fastq/SRR33724466/SRR33724466_2.fastq
+GTF=~/RNAseq/GTF/Mus_musculus.GRCm39.106.gtf
+index_base=~/RNAseq/reference/index/mm39_index
+
+#go to RNAseq directory
+cd RNAseq
+#making directories
+mkdir fastqc_before fastq.tirmmed alignment
+
+
+# Quality check before trimming
+fastqc $read1 $read2 -o fastqc_before/
+
+# Trimming
+fastp -i $read1 -I $read2 -o fastq.tirmmed/tirmmed1.fastq -O fastq.tirmmed/tirmmed2.fastq -h fastp_report.html -j fastp_report.json
+
+# Index the genome
+hisat2-build $reference $index_base
+
+# Alignment
+hisat2 -p 4 -x $index_base \
+       -1 fastq.tirmmed/tirmmed1.fastq \
+       -2 fastq.tirmmed/tirmmed2.fastq \
+       -S alignment/align.sam
+
+# Convert SAM to BAM, sort, and index
+samtools sort -o alignment/align_sorted.bam alignment/align.sam
+samtools index alignment/align_sorted.bam
+samtools flagstat alignment/align_sorted.bam > alignment/flagstat.txt
+
+# Generate count matrix
+featureCounts -T 4 -p -B -a $GTF -o alignment/counts.txt alignment/align_sorted.bam
+
+# Extract simple count matrix
+cut -f1,7 alignment/counts.txt > alignment/simple_counts.txt
+
+# Timing
+duration=$SECONDS
+echo "$(($duration / 60)) minutes and $(($duration % 60)) seconds elapsed."
