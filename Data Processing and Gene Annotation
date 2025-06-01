@@ -1,0 +1,57 @@
+# Load necessary libraries for data manipulation, GEO data retrieval, and plotting
+library(tidyverse)
+library(dplyr)
+library(GEOquery)
+library(ggplot2)
+
+# Load your FPKM expression data from a CSV file
+data = read.csv("../Desktop/GSE296255_VNS-FPKM.csv")
+
+# Retrieve GEO dataset metadata (phenotype data)
+gse = getGEO("GSE296255", GSEMatrix = TRUE)
+metadata = pData(phenoData(gse[[1]]))
+
+# Modify metadata: select the 20th column (sample descriptions)
+# Rename 'description' column to 'Library name' for easier merging
+# Clean the 'Library name' column by removing the prefix "Library name: "
+mod.meta <- metadata %>%
+  select(20) %>%
+  rename(`Library name` = description) %>%
+  mutate(`Library name` = gsub("Library name: ", "", `Library name`))
+
+# Reshape expression data from wide to long format:
+# - keep the first column (genes)
+# - pivot the other columns into two columns: sample and FPKM values
+# Clean sample names by removing ".FPKM" suffix
+data <- data %>%
+  pivot_longer(cols = -1, names_to = "sample", values_to = "FPKM") %>%
+  mutate(sample = gsub(".FPKM", "", sample))
+
+# Join expression data with the cleaned metadata using 'sample' and 'Library name' columns
+joined = left_join(data, mod.meta, by = c("sample" = "Library name"))
+
+# Select top 20 genes with highest expression values (FPKM) for annotation
+maxval = joined %>%
+  arrange(desc(FPKM)) %>%
+  slice_head(n = 20)
+
+# Install and load annotation packages for mouse genes
+BiocManager::install("org.Mm.eg.db", force = TRUE)
+library(org.Mm.eg.db)
+library(AnnotationDbi)
+
+# Check available annotation columns in org.Mm.eg.db (optional)
+columns(org.Mm.eg.db)
+
+# Define which annotation columns we want: Ensembl IDs, gene names, and symbols
+cols = c("ENSEMBL", "GENENAME", "SYMBOL")
+
+# Extract gene IDs from the maxval data for annotation
+keys = as.character(maxval$Gene.ID)
+
+# Perform gene annotation using 'select' from AnnotationDbi
+# Specify that keys are mouse ENTREZIDs
+annotate = select(org.Mm.eg.db, columns = cols, keys = keys, keytype = "ENTREZID")
+
+# Save the annotated gene information to a CSV file on Desktop/RNAseq folder
+write.csv(annotate, "../Desktop/RNAseq/Mm_gene_annotation.csv", row.names = FALSE)
