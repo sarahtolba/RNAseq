@@ -1,5 +1,5 @@
 Overview
-This repository contains a bash script pipeline for RNA-seq analysis of the paired-end Illumina HiSeq 2000 dataset GSM9009135 (SRX28948798). The dataset corresponds to Mus musculus and is part of a study investigating tumor-resident memory CD8+ T cells regulated by TGF-beta and IL-12.
+This repository branch contains a bash script pipeline for RNA-seq analysis of the paired-end Illumina HiSeq 2000 dataset GSM9009135 (SRX28948798). The dataset corresponds to Mus musculus and is part of a study investigating tumor-resident memory CD8+ T cells regulated by TGF-beta and IL-12.
 
 Study Details
 Sample ID: STCO_1-3_S32
