@@ -1,58 +1,74 @@
-RNA-Seq data consists of counts (reads mapped to genes), which are discrete, non-negative integers. Because these counts are not continuous, we cannot model them using a normal distribution.
+RNA-Seq Analysis Using R
+This repository contains R scripts for comprehensive RNA-Seq data analysis, including data processing, gene annotation, and differential expression analysis using the DESeq2 package. The scripts are modular and designed for easy expansion as new methods or data processing steps are added.
 
-Why not Poisson distribution?
-The Poisson distribution models count data where the mean equals the variance (one parameter: lambda).
+Table of Contents
+1. Data Processing and Gene Annotation
 
-In RNA-Seq, the variance is often greater than the mean — this is called overdispersion.
+2. Differential Expression Analysis with DESeq2
 
-This extra variability comes from biological differences between samples (biological replicates) and technical variability.
 
-Thus, the Poisson assumption of equal mean and variance does not hold.
+1. Data Processing and Gene Annotation
+Purpose:
+This script prepares raw or normalized RNA-Seq expression data (e.g., FPKM or counts) for downstream analysis by reshaping, merging with metadata, and annotating gene identifiers.
 
-Why Negative Binomial distribution?
-DESeq2 uses the Negative Binomial (NB) distribution, which includes an extra parameter called dispersion.
+Key steps:
 
-This dispersion parameter accounts for the extra variability in RNA-Seq counts beyond Poisson noise.
+Data loading: Reads expression data from CSV files, typically with gene IDs in rows and samples in columns.
 
-This better models RNA-Seq data variability across biological replicates.
+Data reshaping: Converts wide-format data (genes × samples) into a long format that is easier to manipulate and join with metadata.
 
-"Negative binomial is used because RNA-seq data shows more variability across samples, and NB accounts for this extra variance with a dispersion parameter."
+Metadata integration: Joins expression data with sample metadata retrieved from GEO or another source to include experimental conditions and other annotations.
 
-What DESeq2 does (per gene)
-1. Estimate size factors (normalization)
-Different samples may have different sequencing depths.
+Selecting genes: Extracts the top genes by expression level (e.g., top 20 highest FPKM) for focused analysis or visualization.
 
-Raw counts are also affected by gene length and other biases.
+Gene annotation: Maps gene identifiers (e.g., Entrez IDs) to gene symbols, gene names, and Ensembl IDs using the org.Mm.eg.db Bioconductor package (for mouse data).
 
-DESeq2 calculates size factors per sample to normalize counts, using the median of ratios method:
+Important: Use the correct organism annotation package depending on your species.
 
-Compute the geometric mean of counts for each gene across all samples.
+Exporting results: Saves annotated data to CSV files for use in further analyses or reporting.
 
-For each sample, calculate the ratio of the gene’s count to the geometric mean.
+Packages used:
+tidyverse, GEOquery, org.Mm.eg.db, AnnotationDbi, dplyr, ggplot2
 
-The median of these ratios for all genes in that sample is the size factor.
+Usage notes:
 
-This approach normalizes sequencing depth robustly, minimizing the influence of highly expressed outlier genes.
+Ensure sample names in the expression data exactly match those in metadata for successful joining.
 
-2. Estimate dispersion
-Dispersion measures the spread or variability of gene expression counts.
+When working with organisms other than mouse, replace org.Mm.eg.db with the appropriate annotation package (e.g., org.Hs.eg.db for human).
 
-It helps distinguish:
+This script assumes normalized expression values like FPKM; raw counts are preferred for differential expression testing.
 
-True biological differences in gene expression across conditions.
+2. Differential Expression Analysis with DESeq2
+Purpose:
+To identify genes whose expression differs significantly between experimental groups using raw RNA-Seq count data.
 
-Natural biological variability ("biological noise").
+Background:
+RNA-Seq generates discrete count data representing how many sequencing reads map to each gene. These counts exhibit overdispersion — variability greater than expected from a Poisson model — due to biological differences and technical variability. DESeq2 models this data with a Negative Binomial distribution, incorporating a dispersion parameter to account for extra variability.
 
-Genes with outlier variability have their dispersion estimates shrunk toward a fitted trend line to improve stability.
+Key steps:
 
-Some genes don’t follow this pattern, showing variance not explained by biological or technical variation.
+Normalization:
+DESeq2 calculates size factors to normalize for sequencing depth differences between samples using a median-of-ratios method, which is robust to highly expressed genes.
 
-3. Fit the model
-DESeq2 fits a generalized linear model (GLM) per gene relating expression counts to experimental conditions (e.g., treated vs control).
+Dispersion estimation:
+Measures variance in counts beyond technical noise, helping distinguish true biological differences from noise.
 
-4. Hypothesis testing
-Tests if observed differences in gene expression between conditions are significant.
+Model fitting:
+Fits a generalized linear model (GLM) per gene relating counts to experimental conditions.
 
-Provides p-values for the null hypothesis (no differential expression).
+Hypothesis testing:
+Tests whether observed expression differences are statistically significant, adjusting for multiple comparisons using False Discovery Rate (FDR) correction.
 
-Multiple testing correction is applied to control false discovery rate (FDR), giving adjusted p-values.
+Packages used:
+DESeq2
+
+Usage notes:
+
+Input data must be raw counts, not normalized values (e.g., FPKM or TPM).
+
+Metadata should include all relevant experimental factors.
+
+The output includes fold changes, p-values, and adjusted p-values for each gene.
+
+
+
