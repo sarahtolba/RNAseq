@@ -71,13 +71,13 @@ genelist <- sort(genelist, decreasing = TRUE)
 # Step 13: GSEA for KEGG pathways
 gsea_kegg <- gseKEGG(geneList = genelist, organism = "hsa", minGSSize = 10, pvalueCutoff = 0.05, verbose = FALSE)
 head(gsea_kegg)
-dotplot(gsea_kegg, showCategory = 10, title = "GSEA KEGG Pathways")
+dotplot(gsea_kegg, showCategory = 10, title = "GSEA KEGG Pathways", split=".sign") + facet_grid(.~.sign)
 ridgeplot(gsea_kegg)
 
 # Step 14: GSEA for GO Biological Process
 gsea_go <- gseGO(geneList = genelist, OrgDb = org.Hs.eg.db, ont = "BP", minGSSize = 10, pvalueCutoff = 0.05, verbose = FALSE)
 head(gsea_go)
-dotplot(gsea_go, showCategory = 10, title = "GSEA GO Biological Process")
+dotplot(gsea_go, showCategory = 10, title = "GSEA GO Biological Process", split=".sign") + facet_grid(.~.sign)
 ridgeplot(gsea_go)
 
 gsea_go <- pairwise_termsim(gsea_go)
