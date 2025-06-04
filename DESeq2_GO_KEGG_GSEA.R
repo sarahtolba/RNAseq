@@ -79,3 +79,6 @@ gsea_go <- gseGO(geneList = genelist, OrgDb = org.Hs.eg.db, ont = "BP", minGSSiz
 head(gsea_go)
 dotplot(gsea_go, showCategory = 10, title = "GSEA GO Biological Process")
 ridgeplot(gsea_go)
+
+gsea_go <- pairwise_termsim(gsea_go)
+emapplot(gsea_go, showCategory = 10)
