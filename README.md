@@ -1,7 +1,3 @@
-Got it! I’ll unify and organize your README content into a consistent, clear format with sections following the same pattern. Here’s a polished version:
-
----
-
 # RNA-Seq Analysis Using R
 
 This repository contains R scripts for RNA-Seq data processing, gene annotation, differential expression analysis using **DESeq2**, and functional enrichment analysis (GO and KEGG). The workflow is modular, reproducible, and focused on key steps of RNA-Seq analysis.
@@ -105,11 +101,8 @@ Identify biological functions and pathways enriched in differentially expressed 
 
 Install missing packages with:
 
-
 install.packages("tidyverse")
 BiocManager::install(c("DESeq2", "AnnotationDbi", "org.Hs.eg.db", "clusterProfiler", "enrichplot"))
-
-
 
 ## Input Data Format
 
@@ -138,7 +131,7 @@ BiocManager::install(c("DESeq2", "AnnotationDbi", "org.Hs.eg.db", "clusterProfil
 ## Contact
 
 If you have any questions, issues, or suggestions, feel free to open an issue or contact me:
-**Email:** [sarahtolba842@gmail.com](mailto:sarahtolba842@gmail.com)
+**Email:** [sarahtolba842@gmail.com]
 
 ---
 
