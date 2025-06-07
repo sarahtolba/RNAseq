@@ -5,6 +5,7 @@ library(tidyverse)
 library(DESeq2)
 library(GEOquery)
 library(dplyr)
+library(EnhancedVolcano)
 
 # Load count data from CSV file
 countmatrix = read.csv("../Desktop/GSE296967_raw_counts_All_samples.csv", head = TRUE)
