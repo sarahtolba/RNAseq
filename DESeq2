@@ -66,3 +66,7 @@ resultsNames(dds)
 
 # Generate MA plot of results
 plotMA(res)
+
+
+#Volcano plot of DE genes
+EnhancedVolcano(res, lab = data$gene, x = 'log2FoldChange', y = 'pvalue')
