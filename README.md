@@ -1,137 +1,107 @@
-# RNA-Seq Analysis Using R
 
-This repository contains R scripts for RNA-Seq data processing, gene annotation, differential expression analysis using **DESeq2**, and functional enrichment analysis (GO and KEGG). The workflow is modular, reproducible, and focused on key steps of RNA-Seq analysis.
+# README: Multi-Analysis Pipeline for Genomic Data Visualization and Functional Enrichment
 
----
+This repository contains R scripts that perform a series of genomic data analyses, including:
 
-## 1. Data Processing and Gene Annotation
-
-**Purpose:**
-Prepare RNA-Seq expression data for downstream analysis by reshaping, merging with metadata, and annotating gene identifiers.
-
-**Key steps:**
-
-* Load expression data (e.g., FPKM or raw counts) from CSV or other formats.
-* Reshape data from wide to long format for easier manipulation.
-* Integrate sample metadata from GEO or other sources.
-* Extract top expressed genes for focused analysis.
-* Annotate gene IDs (e.g., Entrez, Ensembl) with gene symbols, gene names, and other identifiers using Bioconductor annotation packages (e.g., `org.Mm.eg.db` for mouse).
-* Export annotated data for further use.
-
-**Packages used:**
-`tidyverse`, `GEOquery`, `org.Mm.eg.db`, `AnnotationDbi`, `dplyr`, `ggplot2`
-
-**Usage notes:**
-
-* Ensure sample names match between expression data and metadata.
-* Use the correct organism-specific annotation package.
-* Prefer raw counts over normalized values (like FPKM) for differential expression analysis.
+* Visualization of chromosome distribution and expression data
+* Heatmap generation of most variable genes from RNA-Seq counts
+* Differential expression analysis using DESeq2
+* Functional enrichment analyses with GO and KEGG pathways
+* Gene Set Enrichment Analysis (GSEA)
 
 ---
 
-## 2. Differential Expression Analysis with DESeq2
+## Scripts Overview
 
-**Purpose:**
-Identify genes with significant expression changes between experimental groups using raw RNA-Seq counts.
+### 1. Chromosome Data Visualization
 
-**Key concepts:**
+* **Purpose:** Visualize distributions and relationships in chromosome-related data using bar plots, histograms, scatter plots, boxplots, and violin plots.
+* **Input:** A CSV file (`ranges.csv`) containing chromosome names and associated statistics like `log2FoldChange`, `stat`, and `baseMean`.
+* **Key Visualizations:**
 
-* RNA-Seq counts are modeled with a Negative Binomial distribution to account for biological and technical variability.
-* DESeq2 normalizes counts by size factors to adjust for sequencing depth.
-* Dispersion estimation models variability among biological replicates.
-* A generalized linear model (GLM) links counts to experimental conditions.
-* Hypothesis testing is performed with multiple testing correction (FDR).
-
-**Packages used:**
-`DESeq2`
-
-**Usage notes:**
-
-* Input data must be raw counts, not normalized values.
-* Metadata must accurately describe experimental design.
-* Outputs include log2 fold changes and adjusted p-values per gene.
+  * Bar plot of chromosome frequency
+  * Histogram of `log2FoldChange` values
+  * Scatter plot of `stat` vs `baseMean` per chromosome
+  * Boxplot and violin plot of `baseMean` grouped by chromosome
 
 ---
 
-## 3. Enrichment Analysis and Visualization
+### 2. Heatmap of Most Variable Genes
 
-**Purpose:**
-Identify biological functions and pathways enriched in differentially expressed genes using Gene Ontology (GO) and KEGG databases.
+* **Purpose:** Identify the top 100 most variable genes across samples and visualize their expression patterns via a heatmap.
+* **Input:** Raw count data and metadata from the EBI Expression Atlas (example experiment E-MTAB-5243).
+* **Process:**
 
-**Key steps:**
-
-* Perform GO enrichment for Biological Process, Molecular Function, and Cellular Component categories.
-* Perform KEGG pathway enrichment analysis.
-* Conduct Gene Set Enrichment Analysis (GSEA) on ranked gene lists using log2 fold changes.
-* Visualize enrichment results via barplots, dotplots, ridgeplots, and cnetplots.
-
-**Packages used:**
-`clusterProfiler`, `enrichplot`, `AnnotationDbi`, `org.Hs.eg.db` (for human)
-
-**Usage notes:**
-
-* Ensure gene identifiers match the annotation database (e.g., Ensembl IDs).
-* Adjust parameters such as p-value cutoff and minimum gene set size for sensitivity.
-* Reference condition factor level should be set appropriately (default "PBS" in example).
+  * Load raw counts and metadata
+  * Filter and select top variable genes by variance
+  * Generate a heatmap scaled by gene (row) with hierarchical clustering of samples
+* **Key libraries:** `pheatmap`, `RColorBrewer`, `tidyverse`
 
 ---
 
-## 4. Workflow Overview
+### 3. Differential Expression and Functional Enrichment Analysis
 
-* Load raw counts and sample metadata (e.g., from EBI ArrayExpress E-MTAB-9479).
-* Filter low-count genes (default threshold: sum counts < 10).
-* Perform differential expression analysis comparing conditions (e.g., stimulus vs. control).
-* Annotate significant genes and conduct GO and KEGG enrichment.
-* Run GSEA on all genes ranked by log2 fold change.
-* Generate comprehensive visualizations for results interpretation.
+* **Purpose:** Conduct a comprehensive differential expression analysis and explore enriched biological functions and pathways.
+* **Input:** Raw count data and metadata from EBI Expression Atlas (example experiment E-MTAB-9479).
+* **Process:**
 
----
-
-## Requirements
-
-* R version 4.0 or higher
-* Bioconductor and CRAN packages:
-
-  * `DESeq2`
-  * `tidyverse`
-  * `AnnotationDbi`
-  * `org.Hs.eg.db` (or organism-specific package)
-  * `clusterProfiler`
-  * `enrichplot`
-
-Install missing packages with:
-
-install.packages("tidyverse")
-BiocManager::install(c("DESeq2", "AnnotationDbi", "org.Hs.eg.db", "clusterProfiler", "enrichplot"))
-
-## Input Data Format
-
-* **Raw counts matrix:** Genes as rows (preferably Ensembl IDs), samples as columns.
-* **Sample metadata:** Table containing sample names and experimental conditions.
+  * Preprocess counts and metadata, ensure proper matching
+  * Run DESeq2 for differential expression analysis between conditions
+  * Filter significant genes based on adjusted p-value and fold change
+  * Annotate genes with human gene symbols and Entrez IDs
+  * Perform GO enrichment (Cellular Component and Molecular Function)
+  * Perform KEGG pathway enrichment
+  * Conduct Gene Set Enrichment Analysis (GSEA) for KEGG and GO Biological Processes
+* **Visualizations:** MA plot, barplots, dotplots, cnetplots, ridgeplots, and enrichment maps
+* **Key libraries:** `DESeq2`, `clusterProfiler`, `org.Hs.eg.db`, `enrichplot`
 
 ---
 
-## Output
+## How to Use
 
-* Differential expression results table (log2 fold changes, adjusted p-values).
-* Enrichment analysis results for GO terms and KEGG pathways.
-* GSEA results tables and plots.
-* Visual plots for enriched terms/pathways (barplots, dotplots, ridgeplots, cnetplots).
+1. **Setup environment:**
+
+   Install required R packages:
+
+   ```r
+   install.packages(c("tidyverse", "pheatmap", "RColorBrewer"))
+   BiocManager::install(c("DESeq2", "clusterProfiler", "org.Hs.eg.db", "enrichplot", "AnnotationDbi"))
+   ```
+
+2. **Prepare data:**
+
+   * For chromosome visualization, place `ranges.csv` in the specified path.
+   * The count and metadata files for RNA-Seq are fetched directly from the provided URLs in the scripts.
+
+3. **Run scripts sequentially or independently:**
+
+   * Start with chromosome visualization to understand chromosome-specific distributions.
+   * Next, run the heatmap script to visualize expression variability.
+   * Finally, run the DESeq2 analysis and enrichment pipeline for functional interpretation.
+
+---
+
+## Outputs and Interpretation
+
+* **Chromosome plots:** Summary views of chromosome frequencies and expression distributions.
+* **Heatmap:** Visual cluster patterns of the most variable genes across samples.
+* **DESeq2 Results:** Lists of differentially expressed genes with statistical significance.
+* **GO/KEGG Enrichment:** Identification of biological processes, molecular functions, cellular components, and pathways affected.
+* **GSEA:** Enriched pathways and gene sets ranked by expression change.
 
 ---
 
 ## Notes
 
-* Filtering thresholds, reference conditions, and cutoff parameters can be customized.
-* Make sure gene IDs and annotation packages correspond to your organism and dataset.
-* For best results, use raw counts for DE analysis instead of normalized values like FPKM.
+* Make sure internet access is available when loading datasets from online sources.
+* Adjust filtering parameters (e.g., variance threshold, p-value cutoff, fold change) based on dataset and biological questions.
+* Customize plot aesthetics for publication-quality figures.
 
 ---
 
-## Contact
+## Contact and Support
 
-If you have any questions, issues, or suggestions, feel free to open an issue or contact me:
-**Email:** [sarahtolba842@gmail.com]
+For issues, suggestions, or collaborations, please contact:
 
----
-
+**\[Your Name]**
+Email: sarahtolba842@gmail.com
