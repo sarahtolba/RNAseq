@@ -1,7 +1,3 @@
-Absolutely! Here's a nicely organized, clean, and well-formatted README based on your text, suitable for Markdown:
-
----
-
 # RNA-seq Analysis Pipeline Overview
 
 This repository provides **bash scripts** for a complete RNA-seq workflow. It covers the following steps:
