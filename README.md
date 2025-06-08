@@ -19,13 +19,13 @@
 ## Scripts Overview
 
 ## 1. rna_seq_analysis.sh
-Performs FastQC on raw reads
-Trims paired-end reads using fastp
-Builds HISAT2 index for mouse genome (GRCm39)
-Aligns trimmed reads with HISAT2
-Converts SAM to sorted BAM and indexes with samtools
-Generates read counts per gene using featureCounts
-Outputs timing information
+* Performs FastQC on raw reads
+* Trims paired-end reads using fastp
+* Builds HISAT2 index for mouse genome (GRCm39)
+* Aligns trimmed reads with HISAT2
+* Converts SAM to sorted BAM and indexes with samtools
+* Generates read counts per gene using featureCounts
+* Outputs timing information
 
 ### 2. Chromosome Data Visualization
 
