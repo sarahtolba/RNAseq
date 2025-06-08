@@ -1,8 +1,13 @@
+# This repo is designed as a step-by-step tutorial to teach RNA-seq analysis including :
 
-# Multi-Analysis Pipeline for Genomic Data Visualization and Functional Enrichment
-
-This repository contains R scripts that perform a series of genomic data analyses, including:
-
+* Reference genome and annotation download
+* RNA-seq raw data download from SRA
+* Quality control before trimming
+* Adapter trimming and quality filtering
+* Reference genome indexing
+* Alignment of reads to the genome
+* BAM file processing and indexing
+* Gene-level quantification with featureCounts
 * Visualization of chromosome distribution and expression data
 * Heatmap generation of most variable genes from RNA-Seq counts
 * Differential expression analysis using DESeq2
@@ -13,7 +18,16 @@ This repository contains R scripts that perform a series of genomic data analyse
 
 ## Scripts Overview
 
-### 1. Chromosome Data Visualization
+## 1. rna_seq_analysis.sh
+Performs FastQC on raw reads
+Trims paired-end reads using fastp
+Builds HISAT2 index for mouse genome (GRCm39)
+Aligns trimmed reads with HISAT2
+Converts SAM to sorted BAM and indexes with samtools
+Generates read counts per gene using featureCounts
+Outputs timing information
+
+### 2. Chromosome Data Visualization
 
 * **Purpose:** Visualize distributions and relationships in chromosome-related data using bar plots, histograms, scatter plots, boxplots, and violin plots.
 * **Input:** A CSV file (`ranges.csv`) containing chromosome names and associated statistics like `log2FoldChange`, `stat`, and `baseMean`.
@@ -26,7 +40,7 @@ This repository contains R scripts that perform a series of genomic data analyse
 
 ---
 
-### 2. Heatmap of Most Variable Genes
+### 3. Heatmap of Most Variable Genes
 
 * **Purpose:** Identify the top 100 most variable genes across samples and visualize their expression patterns via a heatmap.
 * **Input:** Raw count data and metadata from the EBI Expression Atlas (example experiment E-MTAB-5243).
@@ -39,7 +53,7 @@ This repository contains R scripts that perform a series of genomic data analyse
 
 ---
 
-### 3. Differential Expression and Functional Enrichment Analysis
+### 4. Differential Expression and Functional Enrichment Analysis
 
 * **Purpose:** Conduct a comprehensive differential expression analysis and explore enriched biological functions and pathways.
 * **Input:** Raw count data and metadata from EBI Expression Atlas (example experiment E-MTAB-9479).
@@ -72,7 +86,7 @@ This repository contains R scripts that perform a series of genomic data analyse
 
    * For chromosome visualization, place `ranges.csv` in the specified path.
    * The count and metadata files for RNA-Seq are fetched directly from the provided URLs in the scripts.
-
+   * link to ranges.csv : https://drive.google.com/drive/folders/1KiGJPEhZwxqI2snOxTDia1_QimIEGYIy?usp=drive_link
 3. **Run scripts sequentially or independently:**
 
    * Start with chromosome visualization to understand chromosome-specific distributions.
