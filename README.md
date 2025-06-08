@@ -1,5 +1,5 @@
 
-# README: Multi-Analysis Pipeline for Genomic Data Visualization and Functional Enrichment
+# Multi-Analysis Pipeline for Genomic Data Visualization and Functional Enrichment
 
 This repository contains R scripts that perform a series of genomic data analyses, including:
 
