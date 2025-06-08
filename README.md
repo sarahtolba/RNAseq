@@ -1,83 +1,104 @@
+RNA-seq Analysis Pipeline 
 Overview
-This repository branch contains a bash script pipeline for RNA-seq analysis of the paired-end Illumina HiSeq 2000 dataset GSM9009135 (SRX28948798). The dataset corresponds to Mus musculus and is part of a study investigating tumor-resident memory CD8+ T cells regulated by TGF-beta and IL-12.
+This repository provides bash scripts for a complete RNA-seq workflow  It covers:
 
-Study Details
-Sample ID: STCO_1-3_S32
+Reference genome and annotation download
 
-External ID: GSM9009135_r1
+RNA-seq raw data download from SRA
 
-Organism: Mus musculus (Mouse)
+Quality control before trimming
 
-Instrument: Illumina HiSeq 2000
+Adapter trimming and quality filtering
 
-Run Type: Paired-end RNA-Seq
+Reference genome indexing
 
-Total Reads: ~15.6 million spots (3.2 billion bases)
+Alignment of reads to genome
 
-Data Size: Approx. 1 GB
+BAM file processing and indexing
 
-Project: TGF-beta and IL-12 conversely orchestrate formation of CD103+ CD8 tumor-resident memory T cells to regulate response to therapeutic cancer vaccine
+Gene-level quantification with featureCounts
 
-Project Accession: PRJNA1268430 / SRP588101
+Scripts
+1. rna_seq_analysis.sh
+Performs fastQC on raw reads
 
-Sample Accession: SAMN48761962 / SRS25170976
+Trims paired-end reads using fastp
 
-Library Preparation Summary
-Total RNA was extracted from sorted CD103+, CD49a+, and CD103negCD49aneg CD8 tumor-infiltrating lymphocyte (TIL) populations using a single-cell RNA purification kit (Norgen Biotek). RNA integrity was verified (RIN ≥ 7.0). Strand-specific libraries were prepared using the SureSelect Automated Strand-Specific RNA Library Preparation Kit. Fragmented mRNA was reverse-transcribed to cDNA, converted to double-stranded DNA, and sequenced paired-end on Illumina HiSeq 2000.
+Builds HISAT2 index for mouse genome (GRCm39)
 
-Pipeline Description
-This bash script performs the following steps on the raw FASTQ paired-end reads:
+Aligns trimmed reads with HISAT2
 
-Quality Check
-Using fastqc on raw FASTQ files to assess initial quality.
+Converts SAM to sorted BAM and indexes with samtools
 
-Read Trimming
-Using fastp to trim adapters and low-quality bases from both paired reads.
+Generates read counts per gene using featureCounts
 
-Reference Genome Indexing
-Building the HISAT2 index from the Mus musculus GRCm39 reference genome.
+Outputs timing info
 
-Alignment
-Aligning trimmed reads to the reference genome using HISAT2.
+Modify variables at the top to set file paths for:
 
-BAM Processing
-Sorting and indexing aligned reads with samtools.
+Reference genome FASTA
 
-Quality Control of Alignment
-Generating alignment statistics using samtools flagstat.
+Paired-end FASTQ files
 
-Gene-level Quantification
-Counting mapped reads per gene using featureCounts with the appropriate GTF annotation.
+GTF annotation file
 
-Simple Count Matrix Extraction
-Extracting gene ID and raw counts for downstream differential expression analysis.
+HISAT2 index base name
+
+2. setup_environment.sh
+Creates directories: reference, fastq, GTF
+
+Downloads the mouse reference genome annotation GTF file (Ensembl release 106)
+
+Installs SRA Toolkit
+
+Downloads SRA data (example: SRR27700562) using prefetch
+
+Converts SRA to gzipped FASTQ files using fastq-dump
 
 Usage
-Modify the paths to your data files and reference genome in the script variables (reference, read1, read2, GTF, etc.).
+Step 1: Setup environment and download data
+bash
+Copy
+Edit
+bash setup_environment.sh
+This will prepare your directory structure, download necessary genome annotations, and fetch SRA RNA-seq data.
 
-Ensure all required tools (fastqc, fastp, hisat2, samtools, featureCounts) are installed and accessible in your $PATH.
+Step 2: Run RNA-seq analysis pipeline
+Before running, edit rna_seq_analysis.sh to point to your actual data files and references.
 
-Run the bash script from the directory containing your data or adjust paths accordingly.
+Then run:
 
-Outputs will be organized in directories:
-
-fastqc_before/ : raw reads QC reports
-
-fastq.tirmmed/ : trimmed FASTQ files
-
-alignment/ : SAM, BAM files, alignment stats, and count files
+rna_seq_analysis.sh
 
 Requirements
-Linux environment (or WSL on Windows)
+Linux environment with bash shell
 
-Installed bioinformatics tools:
+Tools installed and in PATH:
 
 fastqc
 
 fastp
 
-HISAT2
+hisat2 and hisat2-build
 
 samtools
 
-subread (for featureCounts)
+featureCounts (from Subread package)
+
+wget
+
+sra-toolkit
+
+Notes
+Reference genome and annotation downloads are specific to mouse GRCm39 and Ensembl release 106; update URLs for different versions or species.
+
+The SRA accession used in the example is SRR27700562; replace with your samples.
+
+Ensure you have sufficient disk space and permissions for downloads and indexing.
+
+The pipeline assumes paired-end sequencing data.
+
+Contact
+For questions or help, please contact:
+sarahtolba - sarahtolba842@gmail.com
+
