@@ -1,5 +1,6 @@
-RNA-seq Analysis Pipeline 
-Overview
+RNA-seq Analysis Pipeline Overview
+
+
 This repository provides bash scripts for a complete RNA-seq workflow  It covers:
 
 Reference genome and annotation download
